@@ -1,0 +1,22 @@
+# Supabase local/project configuration. Link a real project with `supabase link`.
+project_id = "codehackademy"
+
+[auth]
+# Accounts are created by invitation only (spec §3). Open sign-up must stay OFF.
+enable_signup = false
+site_url = "https://intranet.codehackademy.app"
+additional_redirect_urls = ["https://admin.codehackademy.app/auth/confirm", "https://intranet.codehackademy.app/auth/confirm", "http://localhost:3001/auth/confirm", "http://localhost:3002/auth/confirm"]
+jwt_expiry = 3600
+enable_refresh_token_rotation = true
+
+[auth.rate_limit]
+sign_in_sign_ups = 30   # per 5 minutes per IP
+
+[auth.mfa.totp]
+enroll_enabled = true
+verify_enabled = true
+
+[functions.invite-user]
+verify_jwt = true
+[functions.complete-onboarding]
+verify_jwt = true
