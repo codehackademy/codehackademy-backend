@@ -32,10 +32,11 @@ export function inviteDeps(): InviteDeps {
       const { data } = await sb.from("cohort_courses").select("id").eq("cohort_id", cohortId).eq("course_id", courseId).maybeSingle();
       return data;
     },
-    async inviteAuthUser(email, name) {
+    async inviteAuthUser(email, name, role) {
       const { data, error } = await sb.auth.admin.inviteUserByEmail(email, {
         data: { name }, // display only: roles are never read from user metadata
-        redirectTo: env("INVITE_REDIRECT_URL"),
+        // Students land in the intranet, staff in the admin app: separate domains, separate sessions.
+        redirectTo: `${env(role === "STUDENT" ? "STUDENT_APP_URL" : "ADMIN_APP_URL")}/auth/confirm`,
       });
       if (error || !data.user) {
         return { ok: false, reason: /already|registered|exists/i.test(error?.message ?? "") ? "EXISTS" : "ERROR", message: error?.message ?? "unknown" };

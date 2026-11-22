@@ -57,7 +57,7 @@ describe("invite-user", () => {
     const deps = makeDeps();
     const res = await handleInviteUser(req(student), deps);
     expect(res.status).toBe(201);
-    expect(deps.inviteAuthUser).toHaveBeenCalledWith("ada@example.com", "Ada Obi");
+    expect(deps.inviteAuthUser).toHaveBeenCalledWith("ada@example.com", "Ada Obi", "STUDENT");
     expect(deps.insertProfile).toHaveBeenCalledWith({ id: "new-user", role: "STUDENT", name: "Ada Obi", email: "ada@example.com" });
     expect(deps.addStudentToCohort).toHaveBeenCalledWith("new-user", COHORT, "cc-1");
     expect(deps.writeAudit).toHaveBeenCalledWith(expect.objectContaining({ actor_id: "admin-1", action: "invite_user", entity_id: "new-user" }));
@@ -66,6 +66,7 @@ describe("invite-user", () => {
     const deps = makeDeps();
     const res = await handleInviteUser(req({ role: "MODERATOR", name: "Mo Dera", email: "mo@example.com" }), deps);
     expect(res.status).toBe(201);
+    expect(deps.inviteAuthUser).toHaveBeenCalledWith("mo@example.com", "Mo Dera", "MODERATOR");
     expect(deps.addStudentToCohort).not.toHaveBeenCalled();
   });
   it("409s when the email already has an account", async () => {

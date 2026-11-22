@@ -20,3 +20,11 @@ verify_enabled = true
 verify_jwt = true
 [functions.complete-onboarding]
 verify_jwt = true
+
+[auth.email.template.invite]
+subject = "You're invited to Code Hackademy"
+content_path = "./supabase/templates/invite.html"
+
+[auth.email.template.recovery]
+subject = "Reset your Code Hackademy password"
+content_path = "./supabase/templates/recovery.html"

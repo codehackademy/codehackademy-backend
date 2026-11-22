@@ -7,7 +7,7 @@ export type InviteDeps = {
   /** Verify the bearer token and load the caller's profile. Null when unauthenticated. */
   authenticate(req: Request): Promise<Caller | null>;
   findCohortCourse(cohortId: string, courseId: string): Promise<{ id: string } | null>;
-  inviteAuthUser(email: string, name: string): Promise<{ ok: true; id: string } | { ok: false; reason: "EXISTS" | "ERROR"; message: string }>;
+  inviteAuthUser(email: string, name: string, role: "STUDENT" | "MODERATOR"): Promise<{ ok: true; id: string } | { ok: false; reason: "EXISTS" | "ERROR"; message: string }>;
   deleteAuthUser(id: string): Promise<void>;
   insertProfile(p: { id: string; role: "STUDENT" | "MODERATOR"; name: string; email: string }): Promise<void>;
   addStudentToCohort(studentId: string, cohortId: string, cohortCourseId: string): Promise<void>;
@@ -36,7 +36,7 @@ export async function handleInviteUser(req: Request, deps: InviteDeps): Promise<
   }
 
   const email = input.email.toLowerCase();
-  const invited = await deps.inviteAuthUser(email, input.name);
+  const invited = await deps.inviteAuthUser(email, input.name, input.role);
   if (!invited.ok) {
     return invited.reason === "EXISTS"
       ? fail("CONFLICT", "An account with this email already exists.")
