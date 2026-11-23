@@ -6,6 +6,12 @@
 Submodule URLs are relative (`../codehackademy-shared`), so create all five repos under the same GitHub organisation.
 Bump the shared pin per repo by pull request (`git -C shared pull && git add shared`).
 
+## Edge Functions and the shared submodule
+Supabase's GitHub integration (Preview/branching) bundles functions from a checkout **without git submodules**, so functions never import from `shared/` directly.
+`pnpm sync:shared` copies the Deno-safe files (constants, time helpers, Zod schemas) into `supabase/functions/_shared/vendor/shared/`; CI runs `pnpm check:shared` and fails if the copy drifts.
+After bumping the `shared` pin: `git -C shared pull && pnpm sync:shared`, then commit both. Do not edit the vendored files by hand.
+If the sibling repos are private, `actions/checkout` needs a token that can read `codehackademy-shared` (a PAT or deploy key), not the default `GITHUB_TOKEN`.
+
 ## Boundaries
 - Browser/server code in the apps uses only the **anon key** with the user's session; RLS decides everything.
 - Privileged work (creating auth users, GitHub verification, audit writes by services) runs in **Edge Functions** with the service-role key.

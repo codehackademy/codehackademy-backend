@@ -1,4 +1,4 @@
-import { inviteUserSchema } from "../../../shared/src/schemas/admin.ts";
+import { inviteUserSchema } from "./vendor/shared/schemas/admin.ts";
 import { fail, json, readJson } from "./http.ts";
 
 export type Caller = { id: string; role: "STUDENT" | "MODERATOR" | "ADMIN"; status: "ACTIVE" | "SUSPENDED" };

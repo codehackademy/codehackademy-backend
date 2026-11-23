@@ -1,4 +1,4 @@
-import { onboardingSchema } from "../../../shared/src/schemas/onboarding.ts";
+import { onboardingSchema } from "./vendor/shared/schemas/onboarding.ts";
 import { fail, json, readJson } from "./http.ts";
 import type { Caller } from "./invite-user.ts";
 

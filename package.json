@@ -6,7 +6,9 @@
     "test": "vitest run",
     "test:db": "bash scripts/test-db.sh",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "sync:shared": "node scripts/sync-shared.mjs",
+    "check:shared": "node scripts/sync-shared.mjs --check"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.119.2",

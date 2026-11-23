@@ -1,4 +1,4 @@
-import { apiError, type ErrorCode } from "../../../shared/src/constants.ts";
+import { apiError, type ErrorCode } from "./vendor/shared/constants.ts";
 
 const STATUS: Partial<Record<ErrorCode, number>> = {
   UNAUTHENTICATED: 401, FORBIDDEN: 403, ACCOUNT_SUSPENDED: 403, VALIDATION_FAILED: 400,

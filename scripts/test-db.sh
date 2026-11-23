@@ -7,7 +7,7 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 run() { if [ "$(id -u)" = 0 ]; then chown postgres "$DIR"; runuser -u postgres -- "$@"; else "$@"; fi; }
 cleanup() { run "$PGBIN/pg_ctl" -D "$DIR/data" -m immediate stop >/dev/null 2>&1 || true; rm -rf "$DIR"; }
 trap cleanup EXIT
-run "$PGBIN/initdb" -D "$DIR/data" -A trust >/dev/null
+run "$PGBIN/initdb" -D "$DIR/data" -U postgres -A trust >/dev/null
 run "$PGBIN/pg_ctl" -D "$DIR/data" -o "-p $PORT -k $DIR" -l "$DIR/pg.log" -w start >/dev/null
 PSQL=("$PGBIN/psql" -h "$DIR" -p "$PORT" -U postgres -v ON_ERROR_STOP=1 -q -X)
 run "${PSQL[@]}" -d postgres -c "create database chk_test" >/dev/null
