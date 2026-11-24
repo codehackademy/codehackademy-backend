@@ -43,7 +43,18 @@ Student/Admin: `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `NEX
 5. Create three Vercel projects (public, student, admin) with the env vars above and the domains from the spec.
 6. Set `contact.email` in the public site's `config/site.ts` when an enquiry address exists.
 
+## Scheduling lives in the database (Phase 1)
+The spec requires `nextProjectDay` to exist once and clone/shift/publish to be transactional, so scheduling is implemented in PostgreSQL functions
+(`next_project_day`, `schedule_cohort_course`, `admin_add_course_to_cohort`, `clone_cohort`, `admin_add_holiday`, `publish_*`) and covered by the spec's vectors in `tests/db/20_content_calendar.test.sql`.
+The apps call these functions and only display the results. Publishing is only possible through the `publish_*` functions: a trigger refuses direct `status = 'PUBLISHED'/'ACTIVE'` writes.
+The Arbiter service will later write `task_reference_solutions.validated_score`; admins cannot (a trigger resets it).
+
 ## Assumptions made (not in the spec)
+- Scheduling includes every project of a course (draft or published); draft projects are hidden from students by RLS, so a project published later is already dated. "Re-run schedule" picks up newly added projects.
+- Publish rules not stated in the spec: a project needs a repo name and one published task; a course needs one published project; a cohort needs at least one course, every course published, and all published projects scheduled.
+- Admin screens show and edit times in the admin's own time zone (default Africa/Lagos) and store UTC.
+- `show_test_cases`: ALL = every case, SAMPLES_ONLY = cases flagged visible, NONE = none.
+- Removing a holiday does not move projects back; use "Re-run schedule".
 - The interest-form table, its field set and the dedupe-by-email rule are ours; fields are configurable in `config/interest-form.ts`.
 - The registration window (confirmed by the academy) stays in `config/site.ts`; `/apply` shows it together with the interest form.
 - Moderators don't go through onboarding (spec describes student onboarding only).

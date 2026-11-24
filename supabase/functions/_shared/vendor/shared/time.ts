@@ -41,3 +41,34 @@ export function formatInTimeZone(instant: Date | string, timeZone: string, opts:
 export function utcInstant(dateIso: string, timeUtc: string): Date {
   return new Date(`${dateIso}T${timeUtc}:00.000Z`);
 }
+
+type Parts = { year: number; month: number; day: number; hour: number; minute: number; second: number };
+
+function partsInZone(date: Date, timeZone: string): Parts {
+  const f = new Intl.DateTimeFormat("en-US", { timeZone, hourCycle: "h23", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit" });
+  const o: Record<string, number> = {};
+  for (const p of f.formatToParts(date)) if (p.type !== "literal") o[p.type] = Number(p.value);
+  return { year: o.year!, month: o.month!, day: o.day!, hour: o.hour!, minute: o.minute!, second: o.second! };
+}
+
+const asUtcMs = (p: Parts) => Date.UTC(p.year, p.month - 1, p.day, p.hour, p.minute, p.second);
+
+/** Convert a wall-clock "YYYY-MM-DDTHH:mm" in an IANA zone to the UTC instant. Returns null for invalid input. */
+export function zonedLocalToUtc(local: string, timeZone: string): Date | null {
+  const m = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})$/.exec(local);
+  if (!m || !isValidTimeZone(timeZone)) return null;
+  const guess = Date.UTC(+m[1]!, +m[2]! - 1, +m[3]!, +m[4]!, +m[5]!);
+  let t = guess - (asUtcMs(partsInZone(new Date(guess), timeZone)) - guess);
+  t = guess - (asUtcMs(partsInZone(new Date(t), timeZone)) - t); // second pass settles daylight-saving edges
+  const d = new Date(t);
+  return Number.isNaN(d.getTime()) ? null : d;
+}
+
+/** The inverse: a UTC instant as "YYYY-MM-DDTHH:mm" wall-clock time in the zone (for datetime-local inputs). */
+export function utcToZonedLocal(instant: Date | string, timeZone: string): string {
+  const d = typeof instant === "string" ? new Date(instant) : instant;
+  if (Number.isNaN(d.getTime())) return "";
+  const p = partsInZone(d, isValidTimeZone(timeZone) ? timeZone : "UTC");
+  const z = (n: number, w = 2) => String(n).padStart(w, "0");
+  return `${z(p.year, 4)}-${z(p.month)}-${z(p.day)}T${z(p.hour)}:${z(p.minute)}`;
+}

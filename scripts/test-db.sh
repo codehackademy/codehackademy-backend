@@ -14,4 +14,7 @@ run "${PSQL[@]}" -d postgres -c "create database chk_test" >/dev/null
 q() { run "${PSQL[@]}" -d chk_test "$@"; }
 q -f "$ROOT/tests/db/00_supabase_stub.sql"
 for f in "$ROOT"/supabase/migrations/*.sql; do echo "migrate: $(basename "$f")"; q -f "$f"; done
-q -f "$ROOT/tests/db/rls.test.sql" 2>&1 | sed -E 's/^psql:[^ ]+ //' | grep -E "ok - |FAIL|ERROR|PASSED"
+for t in "$ROOT"/tests/db/*.test.sql; do
+  echo "== $(basename "$t")"
+  q -f "$t" 2>&1 | sed -E 's/^psql:[^ ]+ //' | grep -E "ok - |FAIL|ERROR|PASSED"
+done

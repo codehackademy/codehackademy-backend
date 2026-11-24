@@ -8,8 +8,8 @@ const isoDate = z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Use the format YYYY-MM-
 export const slugSchema = z
   .string()
   .trim()
-  .min(2)
-  .max(60)
+  .min(2, "Use at least 2 characters.")
+  .max(60, "Use at most 60 characters.")
   .regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, "Use lowercase letters, numbers and hyphens.");
 
 export const courseSchema = z.object({

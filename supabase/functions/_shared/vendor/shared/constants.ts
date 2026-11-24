@@ -69,3 +69,43 @@ export const DEFAULTS = {
   submissionCooldownSeconds: 30,
   defaultTimeZone: "Africa/Lagos",
 } as const;
+
+// ---- Phase 1: content and calendar
+export const CONTENT_STATUSES = ["DRAFT", "PUBLISHED"] as const;
+export type ContentStatus = (typeof CONTENT_STATUSES)[number];
+
+export const TASK_KINDS = ["FUNCTION", "STDIO", "HTTP", "BROWSER", "GIT"] as const;
+export type TaskKind = (typeof TASK_KINDS)[number];
+
+export const LANGUAGE_RUNTIMES = ["NODE", "PYTHON", "BROWSER", "REACT", "GIT"] as const;
+export type LanguageRuntime = (typeof LANGUAGE_RUNTIMES)[number];
+
+export const SHOW_TEST_CASES = ["ALL", "SAMPLES_ONLY", "NONE"] as const;
+export type ShowTestCases = (typeof SHOW_TEST_CASES)[number];
+
+export const EVENT_TYPES = ["CLASS", "WORKSHOP", "GUEST_TALK", "MEETUP", "OTHER"] as const;
+export type EventType = (typeof EVENT_TYPES)[number];
+
+export const COMPARISONS = ["exact", "trim_whitespace", "deep_equal", "float_tolerance", "regex", "unordered_array"] as const;
+export type Comparison = (typeof COMPARISONS)[number];
+
+/** Which runtimes each task kind can use. Mirrors the database check constraint `tasks_kind_runtime`. */
+export const KIND_RUNTIMES: Record<TaskKind, readonly LanguageRuntime[]> = {
+  FUNCTION: ["NODE", "PYTHON"],
+  STDIO: ["NODE", "PYTHON"],
+  HTTP: ["NODE", "PYTHON"],
+  BROWSER: ["BROWSER", "REACT"],
+  GIT: ["GIT"],
+};
+
+export const KIND_LABELS: Record<TaskKind, string> = {
+  FUNCTION: "Function (call an exported function)",
+  STDIO: "Standard input/output (run a script)",
+  HTTP: "HTTP (start a server and send requests)",
+  BROWSER: "Browser (run Playwright against the page)",
+  GIT: "Git (check repository state)",
+};
+
+export const RUNTIME_LABELS: Record<LanguageRuntime, string> = {
+  NODE: "Node.js", PYTHON: "Python", BROWSER: "Plain HTML, CSS and JavaScript", REACT: "React", GIT: "Git",
+};
